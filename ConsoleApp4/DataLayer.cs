@@ -19,19 +19,35 @@ namespace ConsoleApp4
                   private readonly string _name;
                   public int _price;
                   private readonly int _count;
+                  private readonly int _sellCount;
                   private readonly int _createPrice;
                   private readonly ListIngredient _ingredients;
 
-                  public Receipt(string name, int price, int count, int createPrice, ListIngredient ingredients)
+                  public Receipt(string name, int price, int count, int sellCount, int createPrice, ListIngredient ingredients)
                   {
                         _name = name;
                         _price = price;
                         _count = count;
+                        _sellCount = sellCount;
                         _createPrice = createPrice;
                         _ingredients = ingredients;
+
+                        Proceed();
                   }
 
-                  public void Proceed()
+                  public Receipt(string name, int price, int count, int sellCount, int createPrice, params (string, string, int)[] ingredients)
+                  {
+                        _name = name;
+                        _price = price;
+                        _count = count;
+                        _sellCount = sellCount;
+                        _createPrice = createPrice;
+                        _ingredients = new ListIngredient(ingredients);
+
+                        Proceed();
+                  }
+
+                  private void Proceed()
                   {
                         var data = Data.getInstance();
 
@@ -39,15 +55,16 @@ namespace ConsoleApp4
                               _cost += data.GetElement(item.Craft, item.Name).calculate(item.Count);
                   }
 
-                  public double Profit() => _price * _count - _cost - _createPrice - _price * 0.05 * _count;
+                  public double Profit() => _price * _count / (double)_sellCount - _cost - _createPrice - _price * 0.05 * _count / _sellCount;
 
                   public string Name() => _name;
                   public ListIngredient ListIngredient() => _ingredients;
                   public int Count() => _count;
+                  public int SellCount() => _sellCount;
                   public int CreatePrice() => _createPrice;
                   public int Price() => _price;
 
-                  public override string ToString() => $"{_name},{_price},{_count},{_createPrice},{_ingredients}";
+                  public override string ToString() => $"{_name},{_price},{_count},{_sellCount},{_createPrice},{_ingredients}";
 
                   public static implicit operator string(Receipt receipt) => receipt.ToString();
                   public static implicit operator double(Receipt receipt) => receipt.Profit();
@@ -331,6 +348,7 @@ namespace ConsoleApp4
                                     sw.WriteLine($"ingredients={receipt.ListIngredient()}");
                                     sw.WriteLine($"createprice={receipt.CreatePrice()}");
                                     sw.WriteLine($"count={receipt.Count()}");
+                                    sw.WriteLine($"count={receipt.SellCount()}");
                                     sw.WriteLine($"price={receipt.Price()}");
                               }
                         }
@@ -348,6 +366,7 @@ namespace ConsoleApp4
                                     string ingredients = sr.ReadLine().Split('=')[1];
                                     int createPrice = int.Parse(sr.ReadLine().Split('=')[1]);
                                     int count = int.Parse(sr.ReadLine().Split('=')[1]);
+                                    int sellCount = int.Parse(sr.ReadLine().Split('=')[1]);
                                     int price = int.Parse(sr.ReadLine().Split('=')[1]);
 
                                     ListIngredient listIngredient = new ListIngredient();
@@ -357,7 +376,7 @@ namespace ConsoleApp4
                                           listIngredient.Add(par[0], par[1], int.Parse(par[2]));
                                     }
 
-                                    list.Add(new Receipt(name, price, count, createPrice, listIngredient));
+                                    list.Add(new Receipt(name, price, count, sellCount, createPrice, listIngredient));
                               }
                         }
 

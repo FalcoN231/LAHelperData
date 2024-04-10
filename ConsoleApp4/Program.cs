@@ -23,11 +23,12 @@ namespace ConsoleApp4
                   //            Console.WriteLine($"{key}={item[key]}");
 
 
-                  //Receipt receipt = new Receipt("potion", 33, 3, 30, ("herbalism", "rotten_wildflower", 48), ("herbalism", "fresh_wildflower", 24), ("herbalism", "lush_wildflower", 6));
+                  Receipt receipt = new Receipt("potion", 33, 3, 1, 30, ("herbalism", "rotten_wildflower", 48), ("herbalism", "fresh_wildflower", 24), ("herbalism", "lush_wildflower", 6));
+                  //new Test().test(receipt);
                   var test = new Test().read();
 
-                  foreach (var item in test) 
-                        Console.WriteLine(item);
+                  foreach (var item in test)
+                        Console.WriteLine((double)item);
 
                   Console.ReadKey();
             }
