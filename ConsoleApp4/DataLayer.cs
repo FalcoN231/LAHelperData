@@ -239,6 +239,8 @@ namespace ConsoleApp4
                   {
                         List<Receipt> list;
 
+                        if (!File.Exists(Path.Combine(docPath, _fileReceipt))) return new List<Receipt>();
+
                         using (FileStream fs = new FileStream(Path.Combine(docPath, _fileReceipt), FileMode.OpenOrCreate))
                         {
                               list = (List<Receipt>)_formatter.Deserialize(fs);
@@ -248,40 +250,40 @@ namespace ConsoleApp4
                   }
             }
 
-            //public class Test
-            //{
-            //      private readonly string _test = "LAHelper/Test.txt";
-            //      private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            public class Test
+            {
+                  private readonly string _test = "LAHelper/Test.txt";
+                  private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            //      public Test() { }
+                  public Test() { }
 
-            //      public void write(List<Pair[]> data)
-            //      {
-            //            BinaryFormatter formatter = new BinaryFormatter();
-            //            using (FileStream sw = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
-            //            {
-            //                  formatter.Serialize(sw, data.Count);
+                  public void write(List<Pair[]> data)
+                  {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        using (FileStream sw = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
+                        {
+                              formatter.Serialize(sw, data.Count);
 
-            //                  foreach (Pair[] pair in data)
-            //                        formatter.Serialize(sw, pair);
-            //            }
-            //      }
+                              foreach (Pair[] pair in data)
+                                    formatter.Serialize(sw, pair);
+                        }
+                  }
 
-            //      public List<Pair[]> read()
-            //      {
-            //            BinaryFormatter formatter = new BinaryFormatter();
-            //            List<Pair[]> list = new List<Pair[]>();
+                  public List<Pair[]> read()
+                  {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        List<Pair[]> list = new List<Pair[]>();
 
-            //            using (FileStream fs = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
-            //            {
-            //                  int count = (int)formatter.Deserialize(fs);
+                        using (FileStream fs = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
+                        {
+                              int count = (int)formatter.Deserialize(fs);
 
-            //                  for (int i = 0; i < count; i++)
-            //                        list.Add((Pair[])formatter.Deserialize(fs));
-            //            }
+                              for (int i = 0; i < count; i++)
+                                    list.Add((Pair[])formatter.Deserialize(fs));
+                        }
 
-            //            return list;
-            //      }
-            //}
+                        return list;
+                  }
+            }
       }
 }
