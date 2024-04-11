@@ -138,9 +138,34 @@ namespace ConsoleApp4
 
                   private static Data _instance;
 
+                  private readonly string[] _craft = new string[]
+                  {
+                        "herbalism",
+                        "logging",
+                        "mining",
+                        "hunting",
+                        "fishing",
+                        "archaeology"
+                  };
+
                   private Data(BigDict data)
                   {
                         _data = data;
+                  }
+
+                  private Data(List<Pair[]> values)
+                  {
+                        _data = new BigDict();
+
+                        Dict temp;
+                        for (int i = 0; i < values.Count; i++)
+                        {
+                              temp = new Dict();
+                              foreach (var pair in values[i])
+                                    temp.Add(pair.Key, pair.Value);
+
+                              _data.Add(_craft[i], temp);
+                        }
                   }
 
                   public static Data getInstance()
