@@ -11,7 +11,11 @@ namespace ConsoleApp4
             {
                   //new Test().write();
 
-                  //var temp = Data.getInstance().getTable();
+                  //var temp = Data.getInstance().GetBigDict();                  
+
+                  ////Data.getInstance().save();
+
+                  //var temp = FileOperations.getInstance().readData();
 
                   //foreach (var item in temp.Values)
                   //      foreach (var key in item.Keys)

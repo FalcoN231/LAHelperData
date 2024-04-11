@@ -39,6 +39,9 @@ namespace ConsoleApp4
 
             private void InitializeCombo()
             {
+                  comboBox1.SelectedIndex = -1;
+                  comboBox1.Items.Clear();
+
                   titles = Data.getInstance().getTitle();
                   comboBox1.Items.AddRange(titles.Keys.ToArray());
             }

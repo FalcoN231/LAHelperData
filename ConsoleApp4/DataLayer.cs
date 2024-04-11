@@ -5,11 +5,8 @@ using System.Linq;
 using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 
-
-using Pair = System.Collections.Generic.KeyValuePair<string, ConsoleApp4.DataLayer.Element>;
 using Title = System.Collections.Generic.Dictionary<string, string[]>;
 using BigDict = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, ConsoleApp4.DataLayer.Element>>;
-using System.Security.Policy;
 
 namespace ConsoleApp4
 {
@@ -153,21 +150,6 @@ namespace ConsoleApp4
                         _data = data;
                   }
 
-                  private Data(List<Pair[]> values)
-                  {
-                        _data = new BigDict();
-
-                        Dict temp;
-                        for (int i = 0; i < values.Count; i++)
-                        {
-                              temp = new Dict();
-                              foreach (var pair in values[i])
-                                    temp.Add(pair.Key, pair.Value);
-
-                              _data.Add(_craft[i], temp);
-                        }
-                  }
-
                   public static Data getInstance()
                   {
                         if (_instance == null)
@@ -277,64 +259,6 @@ namespace ConsoleApp4
                         }
 
                         return list;
-                  }
-            }
-
-            public class Test
-            {
-                  private readonly string _test = "LAHelper/dataOld.txt";
-                  private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                  private readonly string[] _craft = new string[]
-                  {
-                        "herbalism",
-                        "logging",
-                        "mining",
-                        "hunting",
-                        "fishing",
-                        "archaeology"
-                  };
-
-                  public Test() { }
-
-                  public void write(List<Pair[]> data)
-                  {
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        using (FileStream sw = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
-                        {
-                              formatter.Serialize(sw, data.Count);
-
-                              foreach (Pair[] pair in data)
-                                    formatter.Serialize(sw, pair);
-                        }
-                  }
-
-                  public List<Pair[]> read()
-                  {
-                        var result = new List<Pair[]>();
-
-                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _test)))
-                        {
-                              sr.ReadLine();
-
-                              List<Pair> pairs = new List<Pair>();
-                              string line;
-                              while (sr.Peek() != -1)
-                              {
-                                    line = sr.ReadLine();
-
-                                    if (_craft.Contains(line))
-                                    {
-                                          result.Add(pairs.ToArray());
-                                          pairs.Clear();
-                                          continue;
-                                    }
-                                    var (key, value) = (line.Split('=')[0], new Element(line.Split('=')[1]));
-                                    pairs.Add(new Pair(key, value));
-                              }
-                              result.Add(pairs.ToArray());
-                        }
-
-                        return result;
                   }
             }
       }
