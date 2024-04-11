@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Pair = System.Collections.Generic.KeyValuePair<string, ConsoleApp4.DataLayer.Element>;
 using Title = System.Collections.Generic.Dictionary<string, string[]>;
 using BigDict = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, ConsoleApp4.DataLayer.Element>>;
+using System.Security.Policy;
 
 namespace ConsoleApp4
 {
@@ -150,6 +151,8 @@ namespace ConsoleApp4
                         return _instance;
                   }
 
+                  public BigDict GetBigDict() => _data;
+
                   public Title getTitle()
                   {
                         var result = new Title();
@@ -256,6 +259,15 @@ namespace ConsoleApp4
             {
                   private readonly string _test = "LAHelper/dataOld.txt";
                   private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                  private readonly string[] _craft = new string[]
+                  {
+                        "herbalism",
+                        "logging",
+                        "mining",
+                        "hunting",
+                        "fishing",
+                        "archaeology"
+                  };
 
                   public Test() { }
 
