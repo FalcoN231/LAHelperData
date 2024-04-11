@@ -65,5 +65,10 @@ namespace ConsoleApp4
 
                   Initialize();
             }
+
+            private void button3_Click(object sender, EventArgs e)
+            {
+                  FileOperations.getInstance().write(receiptList);
+            }
       }
 }
