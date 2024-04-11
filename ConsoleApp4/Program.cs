@@ -21,19 +21,9 @@ namespace ConsoleApp4
                   //Receipt receipt = new Receipt("potion", 33, 3, 1, 30, ("herbalism", "rotten_wildflower", 48), ("herbalism", "fresh_wildflower", 24), ("herbalism", "lush_wildflower", 6));
                   //new Test().test(receipt);
 
-                  Data.getInstance().save();
-                  var test = new Test();
 
-                  var temp = test.read();
-
-                  foreach (var item in temp)
-                  {
-                        foreach (var item2 in item)
-                              Console.WriteLine($"{item2.Key}={item2.Value}");
-                  }
-
-                  //Application.EnableVisualStyles();
-                  //Application.Run(new Form1());
+                  Application.EnableVisualStyles();
+                  Application.Run(new Form1());
 
                   Console.ReadKey();
             }
