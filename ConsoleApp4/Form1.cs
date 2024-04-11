@@ -19,12 +19,15 @@ namespace ConsoleApp4
             public Form1()
             {
                   InitializeComponent();
+
+                  receiptList = new Test().read();
+
                   Initialize();
             }
 
-            private void Initialize()
+            public void Initialize()
             {
-                  receiptList = new Test().read();
+                  dataGridView1.Rows.Clear();
 
                   foreach (var item in receiptList)
                   {
@@ -41,13 +44,13 @@ namespace ConsoleApp4
                       e.RowIndex >= 0 && e.RowIndex < rows)
                   {
                         var item = receiptList[e.RowIndex];
-                        new Form2(ref item).ShowDialog();
+                        new Form2(ref item, this).ShowDialog();
                   }
             }
 
             private void button1_Click(object sender, EventArgs e)
             {
-                  new Form2().ShowDialog();
+                  new Form2(this).ShowDialog();
             }
 
             private void button2_Click(object sender, EventArgs e)
@@ -55,6 +58,13 @@ namespace ConsoleApp4
                   int index = dataGridView1.CurrentCell.RowIndex;
 
                   receiptList.RemoveAt(index);
+            }
+
+            public void UpdateReceipt(Receipt receipt)
+            {
+                  receiptList.Add(receipt);
+
+                  Initialize();
             }
       }
 }

@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ConsoleApp4.DataLayer;
 
@@ -16,19 +10,28 @@ namespace ConsoleApp4
       {
             private Receipt _receipt;
             private Dictionary<string, string[]> titles;
+            private readonly Form1 instance;
 
-            public Form2()
+            private readonly int option;
+
+            public Form2(Form1 f)
             {
                   InitializeComponent();
+
                   _receipt = new Receipt();
+                  option = 0;
+                  instance = f;
 
                   InitializeCombo();
             }
 
-            public Form2(ref Receipt receipt)
+            public Form2(ref Receipt receipt, Form1 f)
             {
                   InitializeComponent();
+
                   _receipt = receipt;
+                  option = 1;
+                  instance = f;
 
                   InitializeInfo();
                   InitializeCombo();
@@ -91,6 +94,23 @@ namespace ConsoleApp4
             private void button3_Click(object sender, EventArgs e)
             {
 
+                  string name = textBox2.Text;
+                  int createPrice = int.Parse(textBox3.Text);
+                  int count = int.Parse(textBox4.Text);
+                  int sellCount = int.Parse(textBox5.Text);
+                  int price = int.Parse(textBox6.Text);
+
+
+                  _receipt = new Receipt(name, price, count, sellCount, createPrice, _receipt.ListIngredient());
+
+                  if (option == 1)
+                  {
+                        instance.Initialize();
+                  }
+                  else
+                  {
+                        instance.UpdateReceipt(_receipt);
+                  }
             }
       }
 }

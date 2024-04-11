@@ -296,6 +296,43 @@ namespace ConsoleApp4
 
                         return list;
                   }
-            }            
+            }
+
+            public class Test
+            {
+                  private readonly string _fileDat = "LAHelper/receipt.txt";
+                  private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                  public Test() { }
+                  
+                  public List<Receipt> read()
+                  {
+                        var list = new List<Receipt>();
+
+                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _fileDat), false))
+                        {
+                              while (!sr.EndOfStream)
+                              {
+                                    string name = sr.ReadLine().Split('=')[1];
+                                    string ingredients = sr.ReadLine().Split('=')[1];
+                                    int createPrice = int.Parse(sr.ReadLine().Split('=')[1]);
+                                    int count = int.Parse(sr.ReadLine().Split('=')[1]);
+                                    int sellCount = int.Parse(sr.ReadLine().Split('=')[1]);
+                                    int price = int.Parse(sr.ReadLine().Split('=')[1]);
+
+                                    ListIngredient listIngredient = new ListIngredient();
+                                    foreach (string i in ingredients.Split(','))
+                                    {
+                                          var par = i.Split(';');
+                                          listIngredient.Add(par[0], par[1], int.Parse(par[2]));
+                                    }
+
+                                    list.Add(new Receipt(name, price, count, sellCount, createPrice, listIngredient));
+                              }
+                        }
+
+                        return list;
+                  }
+            }
       }
 }
