@@ -8,6 +8,7 @@ using Pair = System.Collections.Generic.KeyValuePair<string, ConsoleApp4.DataLay
 using Dict = System.Collections.Generic.Dictionary<string, ConsoleApp4.DataLayer.Element>;
 using Title = System.Collections.Generic.Dictionary<string, string[]>;
 using BigDict = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, ConsoleApp4.DataLayer.Element>>;
+using System.Windows.Forms;
 
 namespace ConsoleApp4
 {
@@ -69,7 +70,7 @@ namespace ConsoleApp4
                   public int CreatePrice() => _createPrice;
                   public int Price() => _price;
 
-                  public string[] ToRow() => new string[] { _name, _price.ToString(), _count.ToString(), _sellCount.ToString(), _ingredients, _cost.ToString(), _createPrice.ToString()};
+                  public string[] ToRow() => new string[] { _name, _cost.ToString(), _count.ToString(), _sellCount.ToString(), _createPrice.ToString(), _price.ToString(), _ingredients, "Edit" };
 
                   public override string ToString() => $"{_name},{_price},{_count},{_sellCount},{_createPrice},{_ingredients}";
 
@@ -94,6 +95,8 @@ namespace ConsoleApp4
                   public void Add(string craft, string name, int count) =>
                         _ingredients.Add(new Ingredient(craft, name, count));
 
+                  public void Remove(int index) => _ingredients.RemoveAt(index);
+
                   public IEnumerator GetEnumerator() => _ingredients.GetEnumerator();
 
                   public override string ToString() => string.Join(",", _ingredients);
@@ -117,6 +120,8 @@ namespace ConsoleApp4
                   public string Craft => _craft;
                   public string Name => _name;
                   public int Count => _count;
+
+                  public string[] ToRow() => new string[] { _craft, _name, _count.ToString() };
 
                   public override string ToString() => $"{_craft};{_name};{_count}";
 
@@ -163,6 +168,16 @@ namespace ConsoleApp4
 
                   public BigDict getTable() => _data;
 
+                  public Title getTitle()
+                  {
+                        var result = new Title();
+
+                        foreach (var key in _data.Keys)
+                              result.Add(key, _data[key].Keys.ToArray());
+
+                        return result;
+                  }
+
                   public Element GetElement(string craft, string name) => _data[craft][name];
 
                   ~Data()
@@ -205,7 +220,6 @@ namespace ConsoleApp4
                   private static FileOperations _instance;
 
                   private readonly string _fileData = "LAHelper/data.txt";
-                  private readonly string _fileTitle = "LAHelper/title.txt";
                   private readonly string _fileReceipt = "LAHelper/receipt.txt";
                   private readonly string[] _craft = new string[]
                   {
@@ -271,37 +285,6 @@ namespace ConsoleApp4
                         }
                   }
 
-                  public Title readTitle()
-                  {
-                        var title = new Title();
-
-                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _fileTitle), false))
-                        {
-
-                              List<string> temp = new List<string>();
-                              string key = sr.ReadLine();
-
-                              string line;
-                              while (sr.Peek() != -1)
-                              {
-                                    line = sr.ReadLine();
-                                    if (_craft.Contains(line))
-                                    {
-                                          title.Add(key, temp.ToArray());
-                                          temp.Clear();
-                                          key = line;
-                                          continue;
-                                    }
-
-                                    temp.Add(line);
-                              }
-
-                              title.Add(key, temp.ToArray());
-                        }
-
-                        return title;
-                  }
-
                   public List<Receipt> readReceipt()
                   {
                         var list = new List<Receipt>();
@@ -313,82 +296,6 @@ namespace ConsoleApp4
 
                         return list;
                   }
-            }
-
-            public class Test
-            {
-                  private readonly string _fileData = "LAHelper/data.txt";
-                  private readonly string _fileDat = "LAHelper/receipt.txt";
-                  private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                  public Test() { }
-
-                  public void write()
-                  {
-                        var temp = FileOperations.getInstance().readTitle();
-
-                        using (StreamWriter sw = new StreamWriter(Path.Combine(docPath, _fileData), false))
-                        {
-                              foreach (var item in temp)
-                              {
-                                    sw.WriteLine(item.Key);
-                                    foreach (var item2 in item.Value)
-                                    {
-                                          Console.Write($"{item2}=");
-                                          string name = Console.ReadLine();
-                                          Console.Write("count=");
-                                          sw.WriteLine($"{item2}={name},{Console.ReadLine()}");
-                                    }
-                              }
-                        }
-                  }
-
-                  public void test(Receipt receipt)
-                  {
-                        var temp = FileOperations.getInstance().readTitle();
-
-                        using (StreamWriter sw = new StreamWriter(Path.Combine(docPath, _fileDat), false))
-                        {
-                              for (int i = 0; i < 3; i++)
-                              {
-                                    sw.WriteLine($"name={receipt.Name()}");
-                                    sw.WriteLine($"ingredients={receipt.ListIngredient()}");
-                                    sw.WriteLine($"createprice={receipt.CreatePrice()}");
-                                    sw.WriteLine($"count={receipt.Count()}");
-                                    sw.WriteLine($"count={receipt.SellCount()}");
-                                    sw.WriteLine($"price={receipt.Price()}");
-                              }
-                        }
-                  }
-
-                  public List<Receipt> read()
-                  {
-                        var list = new List<Receipt>();
-
-                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _fileDat), false))
-                        {
-                              while (!sr.EndOfStream)
-                              {
-                                    string name = sr.ReadLine().Split('=')[1];
-                                    string ingredients = sr.ReadLine().Split('=')[1];
-                                    int createPrice = int.Parse(sr.ReadLine().Split('=')[1]);
-                                    int count = int.Parse(sr.ReadLine().Split('=')[1]);
-                                    int sellCount = int.Parse(sr.ReadLine().Split('=')[1]);
-                                    int price = int.Parse(sr.ReadLine().Split('=')[1]);
-
-                                    ListIngredient listIngredient = new ListIngredient();
-                                    foreach (string i in ingredients.Split(','))
-                                    {
-                                          var par = i.Split(';');
-                                          listIngredient.Add(par[0], par[1], int.Parse(par[2]));
-                                    }
-
-                                    list.Add(new Receipt(name, price, count, sellCount, createPrice, listIngredient));
-                              }
-                        }
-
-                        return list;
-                  }
-            }
+            }            
       }
 }

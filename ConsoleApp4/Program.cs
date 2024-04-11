@@ -14,6 +14,7 @@ namespace ConsoleApp4
 {
       internal class Program
       {
+            [STAThread]
             static void Main(string[] args)
             {
                   //new Test().write();
@@ -31,6 +32,9 @@ namespace ConsoleApp4
 
                   foreach (var item in test)
                         Console.WriteLine((string)item);
+
+                  Application.EnableVisualStyles();
+                  Application.Run(new Form1());
 
                   Console.ReadKey();
             }
