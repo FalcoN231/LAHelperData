@@ -14,7 +14,7 @@ namespace ConsoleApp4
             {
                   InitializeComponent();
 
-                  receiptList = new Test().read();
+                  receiptList = FileOperations.getInstance().readReceipt();
 
                   Initialize();
             }

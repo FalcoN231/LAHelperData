@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Collections;
+using System.Runtime.Serialization.Formatters.Binary;
 
-using Pair = System.Collections.Generic.KeyValuePair<string, ConsoleApp4.DataLayer.Element>;
-using Dict = System.Collections.Generic.Dictionary<string, ConsoleApp4.DataLayer.Element>;
 using Title = System.Collections.Generic.Dictionary<string, string[]>;
 using BigDict = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, ConsoleApp4.DataLayer.Element>>;
 
@@ -13,6 +12,7 @@ namespace ConsoleApp4
 {
       public class DataLayer
       {
+            [Serializable]
             public class Receipt
             {
                   private double _cost;
@@ -77,6 +77,7 @@ namespace ConsoleApp4
                   public static implicit operator double(Receipt receipt) => receipt.Profit();
             }
 
+            [Serializable]
             public class ListIngredient : IEnumerable
             {
                   private readonly List<Ingredient> _ingredients;
@@ -103,6 +104,7 @@ namespace ConsoleApp4
                   public static implicit operator string(ListIngredient ingredients) => ingredients.ToString();
             }
 
+            [Serializable]
             public class Ingredient
             {
                   private readonly string _craft;
@@ -129,32 +131,13 @@ namespace ConsoleApp4
 
             public class Data
             {
-                  private BigDict _data;
-                  private readonly string[] _craft = new string[]
-                  {
-                        "herbalism",
-                        "logging",
-                        "mining",
-                        "hunting",
-                        "fishing",
-                        "archaeology"
-                  };
+                  private readonly BigDict _data;
 
                   private static Data _instance;
 
-                  private Data(List<Pair[]> values)
+                  private Data(BigDict data)
                   {
-                        _data = new BigDict();
-
-                        Dict temp;
-                        for (int i = 0; i < values.Count; i++)
-                        {
-                              temp = new Dict();
-                              foreach (var pair in values[i])
-                                    temp.Add(pair.Key, pair.Value);
-
-                              _data.Add(_craft[i], temp);
-                        }
+                        _data = data;
                   }
 
                   public static Data getInstance()
@@ -164,8 +147,6 @@ namespace ConsoleApp4
 
                         return _instance;
                   }
-
-                  public BigDict getTable() => _data;
 
                   public Title getTitle()
                   {
@@ -179,17 +160,10 @@ namespace ConsoleApp4
 
                   public Element GetElement(string craft, string name) => _data[craft][name];
 
-                  ~Data()
-                  {
-                        var pairs = new List<Pair[]>();
-
-                        foreach (var dict in _data.Values)
-                              pairs.Add(dict.ToArray());
-
-                        FileOperations.getInstance().writeData(pairs);
-                  }
+                  public void save() => FileOperations.getInstance().write(_data);
             }
 
+            [Serializable]
             public class Element
             {
                   private int _price;
@@ -218,21 +192,13 @@ namespace ConsoleApp4
             {
                   private static FileOperations _instance;
 
+                  private readonly BinaryFormatter _formatter;
+
                   private readonly string _fileData = "LAHelper/data.txt";
                   private readonly string _fileReceipt = "LAHelper/receipt.txt";
-                  private readonly string[] _craft = new string[]
-                  {
-                        "herbalism",
-                        "logging",
-                        "mining",
-                        "hunting",
-                        "fishing",
-                        "archaeology"
-                  };
                   private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-
-                  private FileOperations() { }
+                  private FileOperations() { _formatter = new BinaryFormatter(); }
 
                   public static FileOperations getInstance()
                   {
@@ -241,97 +207,81 @@ namespace ConsoleApp4
                         return _instance;
                   }
 
-                  public List<Pair[]> readData()
+                  public BigDict readData()
                   {
-                        var result = new List<Pair[]>();
+                        BigDict data;
 
-                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _fileData)))
+                        using (FileStream fs = new FileStream(Path.Combine(docPath, _fileData), FileMode.OpenOrCreate))
                         {
-                              sr.ReadLine();
-
-                              List<Pair> pairs = new List<Pair>();
-                              string line;
-                              while (sr.Peek() != -1)
-                              {
-                                    line = sr.ReadLine();
-
-                                    if (_craft.Contains(line))
-                                    {
-                                          result.Add(pairs.ToArray());
-                                          pairs.Clear();
-                                          continue;
-                                    }
-                                    var (key, value) = (line.Split('=')[0], new Element(line.Split('=')[1]));
-                                    pairs.Add(new Pair(key, value));
-                              }
-                              result.Add(pairs.ToArray());
+                              data = (BigDict)_formatter.Deserialize(fs);
                         }
 
-                        return result;
+                        return data;
                   }
 
-                  public void writeData(List<Pair[]> pairs)
+                  public void write(BigDict data)
                   {
-                        using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, _fileData), false))
+                        using (FileStream sw = new FileStream(Path.Combine(docPath, _fileData), FileMode.OpenOrCreate))
                         {
-                              for (int i = 0; i < pairs.Count; i++)
-                              {
-                                    outputFile.WriteLine(_craft[i]);
+                              _formatter.Serialize(sw, data);
+                        }
+                  }
 
-                                    foreach (var pair in pairs.ElementAt(i))
-                                          outputFile.WriteLine($"{pair.Key}={pair.Value}");
-                              }
+                  public void write(List<Receipt> list)
+                  {
+                        using (FileStream sw = new FileStream(Path.Combine(docPath, _fileReceipt), FileMode.OpenOrCreate))
+                        {
+                              _formatter.Serialize(sw, list);
                         }
                   }
 
                   public List<Receipt> readReceipt()
                   {
-                        var list = new List<Receipt>();
+                        List<Receipt> list;
 
-                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _fileReceipt), false))
+                        using (FileStream fs = new FileStream(Path.Combine(docPath, _fileReceipt), FileMode.OpenOrCreate))
                         {
-
+                              list = (List<Receipt>)_formatter.Deserialize(fs);
                         }
 
                         return list;
                   }
             }
 
-            public class Test
-            {
-                  private readonly string _fileDat = "LAHelper/receipt.txt";
-                  private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //public class Test
+            //{
+            //      private readonly string _test = "LAHelper/Test.txt";
+            //      private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-                  public Test() { }
-                  
-                  public List<Receipt> read()
-                  {
-                        var list = new List<Receipt>();
+            //      public Test() { }
 
-                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _fileDat), false))
-                        {
-                              while (!sr.EndOfStream)
-                              {
-                                    string name = sr.ReadLine().Split('=')[1];
-                                    string ingredients = sr.ReadLine().Split('=')[1];
-                                    int createPrice = int.Parse(sr.ReadLine().Split('=')[1]);
-                                    int count = int.Parse(sr.ReadLine().Split('=')[1]);
-                                    int sellCount = int.Parse(sr.ReadLine().Split('=')[1]);
-                                    int price = int.Parse(sr.ReadLine().Split('=')[1]);
+            //      public void write(List<Pair[]> data)
+            //      {
+            //            BinaryFormatter formatter = new BinaryFormatter();
+            //            using (FileStream sw = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
+            //            {
+            //                  formatter.Serialize(sw, data.Count);
 
-                                    ListIngredient listIngredient = new ListIngredient();
-                                    foreach (string i in ingredients.Split(','))
-                                    {
-                                          var par = i.Split(';');
-                                          listIngredient.Add(par[0], par[1], int.Parse(par[2]));
-                                    }
+            //                  foreach (Pair[] pair in data)
+            //                        formatter.Serialize(sw, pair);
+            //            }
+            //      }
 
-                                    list.Add(new Receipt(name, price, count, sellCount, createPrice, listIngredient));
-                              }
-                        }
+            //      public List<Pair[]> read()
+            //      {
+            //            BinaryFormatter formatter = new BinaryFormatter();
+            //            List<Pair[]> list = new List<Pair[]>();
 
-                        return list;
-                  }
-            }
+            //            using (FileStream fs = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
+            //            {
+            //                  int count = (int)formatter.Deserialize(fs);
+
+            //                  for (int i = 0; i < count; i++)
+            //                        list.Add((Pair[])formatter.Deserialize(fs));
+            //            }
+
+            //            return list;
+            //      }
+            //}
       }
 }
