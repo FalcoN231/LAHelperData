@@ -252,7 +252,7 @@ namespace ConsoleApp4
 
             public class Test
             {
-                  private readonly string _test = "LAHelper/Test.txt";
+                  private readonly string _test = "LAHelper/dataOld.txt";
                   private readonly string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
                   public Test() { }
@@ -271,18 +271,31 @@ namespace ConsoleApp4
 
                   public List<Pair[]> read()
                   {
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        List<Pair[]> list = new List<Pair[]>();
+                        var result = new List<Pair[]>();
 
-                        using (FileStream fs = new FileStream(Path.Combine(docPath, _test), FileMode.OpenOrCreate))
+                        using (StreamReader sr = new StreamReader(Path.Combine(docPath, _test)))
                         {
-                              int count = (int)formatter.Deserialize(fs);
+                              sr.ReadLine();
 
-                              for (int i = 0; i < count; i++)
-                                    list.Add((Pair[])formatter.Deserialize(fs));
+                              List<Pair> pairs = new List<Pair>();
+                              string line;
+                              while (sr.Peek() != -1)
+                              {
+                                    line = sr.ReadLine();
+
+                                    if (_craft.Contains(line))
+                                    {
+                                          result.Add(pairs.ToArray());
+                                          pairs.Clear();
+                                          continue;
+                                    }
+                                    var (key, value) = (line.Split('=')[0], new Element(line.Split('=')[1]));
+                                    pairs.Add(new Pair(key, value));
+                              }
+                              result.Add(pairs.ToArray());
                         }
 
-                        return list;
+                        return result;
                   }
             }
       }
