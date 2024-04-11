@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static ConsoleApp4.DataLayer;
 
 namespace ConsoleApp4
@@ -23,12 +25,12 @@ namespace ConsoleApp4
                   //            Console.WriteLine($"{key}={item[key]}");
 
 
-                  Receipt receipt = new Receipt("potion", 33, 3, 1, 30, ("herbalism", "rotten_wildflower", 48), ("herbalism", "fresh_wildflower", 24), ("herbalism", "lush_wildflower", 6));
+                  //Receipt receipt = new Receipt("potion", 33, 3, 1, 30, ("herbalism", "rotten_wildflower", 48), ("herbalism", "fresh_wildflower", 24), ("herbalism", "lush_wildflower", 6));
                   //new Test().test(receipt);
                   var test = new Test().read();
 
                   foreach (var item in test)
-                        Console.WriteLine((double)item);
+                        Console.WriteLine((string)item);
 
                   Console.ReadKey();
             }

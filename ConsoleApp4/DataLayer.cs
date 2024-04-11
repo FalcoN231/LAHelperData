@@ -47,7 +47,12 @@ namespace ConsoleApp4
                         Proceed();
                   }
 
-                  private void Proceed()
+                  public Receipt()
+                  {
+                        _ingredients = new ListIngredient();
+                  }
+
+                  public void Proceed()
                   {
                         var data = Data.getInstance();
 
@@ -63,6 +68,8 @@ namespace ConsoleApp4
                   public int SellCount() => _sellCount;
                   public int CreatePrice() => _createPrice;
                   public int Price() => _price;
+
+                  public string[] ToRow() => new string[] { _name, _price.ToString(), _count.ToString(), _sellCount.ToString(), _ingredients, _cost.ToString(), _createPrice.ToString()};
 
                   public override string ToString() => $"{_name},{_price},{_count},{_sellCount},{_createPrice},{_ingredients}";
 
