@@ -12,25 +12,25 @@ namespace ConsoleApp4
             private Dictionary<string, string[]> titles;
             private readonly Form1 instance;
 
-            private readonly int option;
+            private readonly int index;
 
             public Form2(Form1 f)
             {
                   InitializeComponent();
 
                   _receipt = new Receipt();
-                  option = 0;
+                  index = -1;
                   instance = f;
 
                   InitializeCombo();
             }
 
-            public Form2(ref Receipt receipt, Form1 f)
+            public Form2(int index, Receipt receipt, Form1 f)
             {
                   InitializeComponent();
 
                   _receipt = receipt;
-                  option = 1;
+                  this.index = index;
                   instance = f;
 
                   InitializeInfo();
@@ -103,14 +103,12 @@ namespace ConsoleApp4
 
                   _receipt = new Receipt(name, price, count, sellCount, createPrice, _receipt.ListIngredient());
 
-                  if (option == 1)
-                  {
-                        instance.Initialize();
-                  }
-                  else
-                  {
+                  if (index == -1)
                         instance.UpdateReceipt(_receipt);
-                  }
+                  else
+                        instance.UpdateReceipt(_receipt, index);
+
+                  Close();
             }
       }
 }

@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ConsoleApp4.DataLayer;
 
@@ -44,7 +38,7 @@ namespace ConsoleApp4
                       e.RowIndex >= 0 && e.RowIndex < rows)
                   {
                         var item = receiptList[e.RowIndex];
-                        new Form2(ref item, this).ShowDialog();
+                        new Form2(e.RowIndex, item, this).ShowDialog();
                   }
             }
 
@@ -58,11 +52,16 @@ namespace ConsoleApp4
                   int index = dataGridView1.CurrentCell.RowIndex;
 
                   receiptList.RemoveAt(index);
+
+                  Initialize();
             }
 
-            public void UpdateReceipt(Receipt receipt)
+            public void UpdateReceipt(Receipt receipt, int index = -1)
             {
-                  receiptList.Add(receipt);
+                  if (index == -1)
+                        receiptList.Add(receipt);
+                  else
+                        receiptList[index] = receipt;
 
                   Initialize();
             }
